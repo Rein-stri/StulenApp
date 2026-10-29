@@ -36,15 +36,12 @@ jobs:
 
       - name: Install Buildozer
         run: |
-          python3 -m venv .venv
-          .venv/bin/pip install --upgrade pip setuptools wheel
-          .venv/bin/pip install buildozer cython==0.29.36
+          python3 -m pip install --user --upgrade pip setuptools wheel
+          python3 -m pip install --user buildozer cython==0.29.36
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
       - name: Build Android APK
-        env:
-          PIP_DISABLE_PIP_VERSION_CHECK: "1"
         run: |
-          export PATH="$PWD/.venv/bin:$PATH"
           buildozer -v android debug
 
       - name: Upload APK
