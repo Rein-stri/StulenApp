@@ -5,9 +5,13 @@ on:
     branches: [main]
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-22.04
+    timeout-minutes: 60
 
     steps:
       - name: Checkout repository
@@ -19,7 +23,7 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Install system dependencies
+      - name: Install dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y \
@@ -27,8 +31,8 @@ jobs:
             python3-pip python3-venv \
             autoconf automake libtool pkg-config \
             zlib1g-dev libncurses5-dev libncursesw5-dev \
-            libtinfo6 cmake libffi-dev libssl-dev \
-            libltdl-dev
+            cmake libffi-dev libssl-dev libltdl-dev \
+            build-essential
 
       - name: Install Buildozer
         run: |
@@ -36,12 +40,13 @@ jobs:
           .venv/bin/pip install --upgrade pip setuptools wheel
           .venv/bin/pip install buildozer cython==0.29.36
 
-      - name: Build APK
+      - name: Build Android APK
         run: |
           export PATH="$PWD/.venv/bin:$PATH"
           buildozer -v android debug
 
       - name: Upload APK
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: StulenApp-APK
