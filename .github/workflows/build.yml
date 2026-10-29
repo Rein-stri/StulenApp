@@ -23,7 +23,7 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Install dependencies
+      - name: Install system dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y \
@@ -41,6 +41,8 @@ jobs:
           .venv/bin/pip install buildozer cython==0.29.36
 
       - name: Build Android APK
+        env:
+          PIP_DISABLE_PIP_VERSION_CHECK: "1"
         run: |
           export PATH="$PWD/.venv/bin:$PATH"
           buildozer -v android debug
